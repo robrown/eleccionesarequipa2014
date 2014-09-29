@@ -1,0 +1,18 @@
+section{
+	 margin-left: .5em;
+	 border: 1px solid #CCC;
+	 background-color: #E0E0E0;
+	 padding: .5em;
+	 overflow: hidden;
+	 width: 98%
+
+}
+div{
+	float: left;
+	padding: 1em;
+}
+div.boton{
+	padding: 3em;
+	text-align: center;
+	margin-left: 100px;
+}

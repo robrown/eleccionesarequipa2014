@@ -2,6 +2,7 @@ import bottle
 import pymongo
 import sys
 
+
 conexion = pymongo.Connection("mongodb://localhost",safe=True)
 #conexion = pymongo.MongoClient('localhost',27017)
 
@@ -32,6 +33,7 @@ def buscar_mesa():
 		except:
 			print "Hubo un error al ejecutar la consulta:" ,sys.exc_info()[0]
 	if item == None:
+		print mesa
 		return '''
 			<script type="text/javascript">
 				alert("Mesa no encontrada");
@@ -48,6 +50,9 @@ def buscar_mesa():
 
 	ubica = item['ubicacion']
 	local = ubica['local']
+	criterio = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
+	item['candidatos'].sort(key=lambda x: criterio.index(x['posicion']))
+	print item['candidatos']
 
 	return bottle.template('candidatos.tpl',{'mesa':mesa,'local':local['nombre'],
 	'electores':item['num_electores'],'username':"Rodolfo",'things':item['candidatos']})
@@ -105,10 +110,14 @@ def candidatos(cedula):
 from bottle import static_file
 @bottle.route('/css/<filename>')
 def server_static(filename):
-  return static_file(filename, root='/home/rodolfo/eleccionesmongo/elecciones/proyecto/yanahuara/css')
+  #return static_file(filename, root='/home/rodolfo/eleccionesmongo/elecciones/proyecto/yanahuara/css')
+  #Mac
+  return static_file(filename, root='/Users/iServidor/eleccionesarequipa2014/css')
+
 @bottle.route('/img/<filename>')
 def server_static(filename):
-	return static_file(filename, root='/home/rodolfo/eleccionesmongo/elecciones/proyecto/yanahuara/img')
+	#return static_file(filename, root='/home/rodolfo/eleccionesmongo/elecciones/proyecto/yanahuara/img')
+	return static_file(filename, root='/Users/iServidor/eleccionesarequipa2014/img')
 
 bottle.debug(True)
 bottle.run(host='localhost',port=8082)

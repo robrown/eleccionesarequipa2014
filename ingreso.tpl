@@ -25,7 +25,7 @@
 	<h1>Bienvenido {{username}}</h1>
 	<form action="/buscar_mesa" method="POST">
 		INGRESE LA MESA:
-	<input type="text" name="mesa" size="5" value="" onkeypress="return justNumbers(event);" maxlength="5" autofocus ><br>
+	<input type="text" name="mesa" size="6" value="" onkeypress="return justNumbers(event);" maxlength="6" autofocus ><br>
 	<input type="submit" value="Enviar">
 	</form>
 </body>

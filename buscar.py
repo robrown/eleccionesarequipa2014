@@ -6,9 +6,47 @@ import sys
 conexion = pymongo.Connection("mongodb://localhost",safe=True)
 #conexion = pymongo.MongoClient('localhost',27017)
 
+@bottle.post('/login')
+def do_login():
+	username = bottle.request.forms.get("username")
+	password = bottle.request.forms.get("password")
+	if check_login(username, password):
+		bottle.response.set_cookie("account", username, secret='some-secret-key')
+		return bottle.template('ingreso.tpl', {'username':username})
+	else:
+		return "<p>Login failed.</p>"
+
+def check_login(usuario,contra):
+	try:
+		db = conexion.test
+		name = db.usuarios
+		consulta = {'usuario':usuario}
+		item = name.find_one(consulta)
+	except:
+		print "Hubo un error al ejecutar la consulta:" ,sys.exc_info()[0]
+	print item
+	
+	if usuario == item['usuario'] and contra == item['password']:
+		return True
+	else:
+		return False
+
+@bottle.route('/restricted')
+def restricted_area():
+	username = bottle.request.get_cookie("account", secret='some-secret-key')
+	if username:
+		return template("Hello {{name}}. Welcome back.", {'username':username})
+	else:
+		return "You are not logged in. Access denied."
+
 @bottle.route('/')
 def index():
-    return bottle.template('ingreso.tpl',{'username':"Rodolfo"})
+    return bottle.template('login.tpl')
+
+@bottle.route('/ingreso')
+def ingreso():
+	username = bottle.request.get_cookie("account", secret='some-secret-key')
+	return bottle.template('ingreso.tpl',{'username':username})
 
 @bottle.post('/buscar_mesa')
 def buscar_mesa():
@@ -24,11 +62,9 @@ def buscar_mesa():
 	else:
 		mesa = int(mesa)
 		query = {'_id':mesa}
-		
-		db = conexion.test
-		name = db.user
-		
 		try:
+			db = conexion.test
+			name = db.user
 			item = name.find_one(query)
 		except:
 			print "Hubo un error al ejecutar la consulta:" ,sys.exc_info()[0]
@@ -44,7 +80,7 @@ def buscar_mesa():
 		return '''
 			<script type="text/javascript">
 				alert("La mesa ya fue ingresada");
-				location.href='/';
+				location.href='/ingreso';
 			</script> 
 			'''
 
@@ -52,17 +88,10 @@ def buscar_mesa():
 	local = ubica['local']
 	criterio = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
 	item['candidatos'].sort(key=lambda x: criterio.index(x['posicion']))
-	print item['candidatos']
-
+	username = bottle.request.get_cookie("account", secret='some-secret-key')
 	return bottle.template('candidatos.tpl',{'mesa':mesa,'local':local['nombre'],
-	'electores':item['num_electores'],'username':"Rodolfo",'things':item['candidatos']})
-	"""array(item['candidatos'])
+	'electores':item['num_electores'],'username':username,'things':item['candidatos']})
 
-def array (cedula):
-	print cedula
-	return bottle.redirect('candidatos.tpl', username="Rodolfo",mesa="14440", things=cedula)
-
-"""
 
 @bottle.post('/candidatos/<cedula>')
 def candidatos(cedula):
@@ -110,14 +139,14 @@ def candidatos(cedula):
 from bottle import static_file
 @bottle.route('/css/<filename>')
 def server_static(filename):
-  #return static_file(filename, root='/home/rodolfo/eleccionesmongo/elecciones/proyecto/yanahuara/css')
+  return static_file(filename, root='/home/rodolfo/eleccionesarequipa2014/css')
   #Mac
-  return static_file(filename, root='/Users/iServidor/eleccionesarequipa2014/css')
+  #return static_file(filename, root='/Users/iServidor/eleccionesarequipa2014/css')
 
 @bottle.route('/img/<filename>')
 def server_static(filename):
-	#return static_file(filename, root='/home/rodolfo/eleccionesmongo/elecciones/proyecto/yanahuara/img')
-	return static_file(filename, root='/Users/iServidor/eleccionesarequipa2014/img')
+	return static_file(filename, root='/home/rodolfo/eleccionesarequipa2014/img')
+	#return static_file(filename, root='/Users/iServidor/eleccionesarequipa2014/img')
 
 bottle.debug(True)
 bottle.run(host='localhost',port=8082)

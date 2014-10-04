@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>CANDIDATOS MESA </title>
-	<link rel="stylesheet" type="text/css" href="/css/style.css" media="screen">
+	<link rel="stylesheet" type="text/css" href="/css/estilo.css" media="screen">
 	<link href="/css/bootstrap.css" rel="stylesheet" media="screen">
     <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
 	<script type="text/javascript">

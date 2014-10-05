@@ -144,23 +144,20 @@ def candidatos(cedula):
 			</script> 
 		    '''
     """
-
+import json
 @bottle.route('/resultados')
 def resultados():
 	pregunta = {'digitada':True}
 	db = conexion.test
 	name = db.user
-	resul = db.resultados
-	suma = {"AREQUIPA RENACE":0,"ACCION POPULAR":0,"ALIANZA PARA EL PROGRESO DE AREQUIPA":0,
-	"UNIDOS POR EL GRAN CAMBIO":0,"AVANCEMOS YANAHUARA":0,u"FUERZA AREQUIPENA":0,"FUERZA POPULAR":0,
-	"RESTAURACION NACIONAL":0,"JUNTOS POR EL DESARROLLO DE AREQUIPA":0,"PARTIDO POPULAR CRISTIANO":0,
-	"PERU PATRIA SEGURA":0,"RESTAURACION NACIONAL":0,"UNION POR EL PERU":0,"VAMOS AREQUIPA":0,
-	"VAMOS PERU":0,"YANAHUARA UN SENTIMIENTO Y TRABAJO":0,"BLANCO":0,"NULO":0}
+	suma = {'AREQUIPA RENACE':0,'ACCION POPULAR':0,'ALIANZA PARA EL PROGRESO DE AREQUIPA':0,
+	'UNIDOS POR EL GRAN CAMBIO':0,'AVANCEMOS YANAHUARA':0,'FUERZA AREQUIPENA':0,'FUERZA POPULAR':0,
+	'RESTAURACION NACIONAL':0,'JUNTOS POR EL DESARROLLO DE AREQUIPA':0,'PARTIDO POPULAR CRISTIANO':0,
+	'PERU PATRIA SEGURA':0,'RESTAURACION NACIONAL':0,'UNION POR EL PERU':0,'VAMOS AREQUIPA':0,
+	'VAMOS PERU':0,'YANAHUARA UN SENTIMIENTO Y TRABAJO':0,'BLANCO':0,'NULO':0}
+	total_votos = 0
 	try:
-		itemres = resul.find()
 		item = name.find(pregunta)
-		for cero in itemres:
-			cero['candidatos'][0]['votos'] = 0
 	except:
 		print "Hubo un error al ejecutar la consulta:" ,sys.exc_info()[0]
 	for x in item:
@@ -168,9 +165,16 @@ def resultados():
 			dato = suma[y['nombre']]
 			dato = int(dato) + int(y['votos'])
 			suma[y['nombre']] = dato
-	print suma
-	print "hola estoy aca"
-
+			total_votos+= int(y['votos'])
+	#print total_votos
+	return bottle.template('grafico.tpl', 
+		{'renace':suma["AREQUIPA RENACE"],'accion':suma["ACCION POPULAR"],
+		'alianza':suma["ALIANZA PARA EL PROGRESO DE AREQUIPA"],'unidos':suma["UNIDOS POR EL GRAN CAMBIO"],
+		'avancemos':suma["AVANCEMOS YANAHUARA"],'fuerza':suma["FUERZA AREQUIPENA"],'popular':suma["FUERZA POPULAR"],
+		'restauracion':suma["RESTAURACION NACIONAL"],'juntos':suma["JUNTOS POR EL DESARROLLO DE AREQUIPA"],
+		'ppc':suma["PARTIDO POPULAR CRISTIANO"],'patria':suma["PERU PATRIA SEGURA"],'union':suma["UNION POR EL PERU"],
+		'vamos':suma["VAMOS AREQUIPA"],'peru':suma["VAMOS PERU"],'yanahuara':suma["YANAHUARA UN SENTIMIENTO Y TRABAJO"],
+		'blanco':suma["BLANCO"],'nulo':suma["NULO"]})
 
 	
 from bottle import static_file
@@ -184,6 +188,11 @@ def server_static(filename):
 def server_static(filename):
 	return static_file(filename, root='/home/rodolfo/eleccionesarequipa2014/img')
 	#return static_file(filename, root='/Users/iServidor/eleccionesarequipa2014/img')
+
+@bottle.route('/js/<filename>')
+def server_static(filename):
+	return static_file(filename, root='/home/rodolfo/eleccionesarequipa2014/js')
+	#return static_file(filename, root='/Users/iServidor/eleccionesarequipa2014/js')
 
 bottle.debug(True)
 bottle.run(host='localhost',port=8082)

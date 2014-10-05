@@ -22,7 +22,7 @@
 <body>
 	<p> Bienvenido {{username}}</p>
 	<h1> MESA NUMERO {{mesa}}</h1>
-	<p>LOCAL {{local}} - NUMERO DE ELECTORES {{electores}}</p>
+	<p>LOCAL {{local}} </p>
 	<section>
 		<form action="/candidatos/{{mesa}}" method="POST">
 		%for thing in things:

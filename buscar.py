@@ -56,7 +56,7 @@ def buscar_mesa():
 		return '''
 			<script type="text/javascript">
 				alert("Mesa no valida");
-				location.href='/';
+				location.href='/ingreso';
 			</script> 
 			'''
 	else:
@@ -73,7 +73,7 @@ def buscar_mesa():
 		return '''
 			<script type="text/javascript">
 				alert("Mesa no encontrada");
-				location.href='/';
+				location.href='/ingreso';
 			</script> 
 			'''
 	if item['digitada']== True:
@@ -86,11 +86,11 @@ def buscar_mesa():
 
 	ubica = item['ubicacion']
 	local = ubica['local']
-	criterio = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
+	criterio = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
 	item['candidatos'].sort(key=lambda x: criterio.index(x['posicion']))
 	username = bottle.request.get_cookie("account", secret='some-secret-key')
-	return bottle.template('candidatos.tpl',{'mesa':mesa,'local':local['nombre'],
-	'electores':item['num_electores'],'username':username,'things':item['candidatos']})
+	return bottle.template('candidatos.tpl',{'mesa':mesa,'local':local['nombre'],'username':username,'things':item['candidatos']})
+	#'electores':item['num_electores']
 
 
 @bottle.post('/candidatos/<cedula>')
@@ -113,9 +113,17 @@ def candidatos(cedula):
 	    	item['candidatos'][indice]['votos']= cursor
 	    	suma = suma + cursor
 	    	indice += 1
+	    item['digitada']= True
+	    name.save(item)
+	    return '''
+			<script type="text/javascript">
+				alert("Mesa computada satisfactoriamente!!");
+				location.href='/ingreso';
+			</script> 
+	    '''
 	except:
 		print "Hubo un error al ejecutar la consulta:" ,sys.exc_info()[0]
-	if suma <= item['num_electores']:
+	"""if suma <= item['num_electores']:
 		try:
 			item['digitada']= True
 			name.save(item)
@@ -135,6 +143,35 @@ def candidatos(cedula):
 				history.back();
 			</script> 
 		    '''
+    """
+
+@bottle.route('/resultados')
+def resultados():
+	pregunta = {'digitada':True}
+	db = conexion.test
+	name = db.user
+	resul = db.resultados
+	suma = {"AREQUIPA RENACE":0,"ACCION POPULAR":0,"ALIANZA PARA EL PROGRESO DE AREQUIPA":0,
+	"UNIDOS POR EL GRAN CAMBIO":0,"AVANCEMOS YANAHUARA":0,u"FUERZA AREQUIPENA":0,"FUERZA POPULAR":0,
+	"RESTAURACION NACIONAL":0,"JUNTOS POR EL DESARROLLO DE AREQUIPA":0,"PARTIDO POPULAR CRISTIANO":0,
+	"PERU PATRIA SEGURA":0,"RESTAURACION NACIONAL":0,"UNION POR EL PERU":0,"VAMOS AREQUIPA":0,
+	"VAMOS PERU":0,"YANAHUARA UN SENTIMIENTO Y TRABAJO":0,"BLANCO":0,"NULO":0}
+	try:
+		itemres = resul.find()
+		item = name.find(pregunta)
+		for cero in itemres:
+			cero['candidatos'][0]['votos'] = 0
+	except:
+		print "Hubo un error al ejecutar la consulta:" ,sys.exc_info()[0]
+	for x in item:
+		for y in x['candidatos']:
+			dato = suma[y['nombre']]
+			dato = int(dato) + int(y['votos'])
+			suma[y['nombre']] = dato
+	print suma
+	print "hola estoy aca"
+
+
 	
 from bottle import static_file
 @bottle.route('/css/<filename>')

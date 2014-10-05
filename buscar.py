@@ -24,7 +24,6 @@ def check_login(usuario,contra):
 		item = name.find_one(consulta)
 	except:
 		print "Hubo un error al ejecutar la consulta:" ,sys.exc_info()[0]
-	print item
 	
 	if usuario == item['usuario'] and contra == item['password']:
 		return True

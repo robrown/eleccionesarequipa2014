@@ -155,8 +155,10 @@ def resultados():
 	'PERU PATRIA SEGURA':0,'RESTAURACION NACIONAL':0,'UNION POR EL PERU':0,'VAMOS AREQUIPA':0,
 	'VAMOS PERU':0,'YANAHUARA UN SENTIMIENTO Y TRABAJO':0,'BLANCO':0,'NULO':0}
 	total_votos = 0
+	porcentaje_total = 0
 	try:
 		item = name.find(pregunta)
+		mesas_compu= name.find(pregunta).count()
 	except:
 		print "Hubo un error al ejecutar la consulta:" ,sys.exc_info()[0]
 	for x in item:
@@ -166,6 +168,7 @@ def resultados():
 			suma[y['nombre']] = dato
 			total_votos+= int(y['votos'])
 	#print total_votos
+	porcentaje_total = (total_votos*100)/24000
 	return bottle.template('grafico.tpl', 
 		{'renace':suma["AREQUIPA RENACE"],'accion':suma["ACCION POPULAR"],
 		'alianza':suma["ALIANZA PARA EL PROGRESO DE AREQUIPA"],'unidos':suma["UNIDOS POR EL GRAN CAMBIO"],
@@ -173,7 +176,7 @@ def resultados():
 		'restauracion':suma["RESTAURACION NACIONAL"],'juntos':suma["JUNTOS POR EL DESARROLLO DE AREQUIPA"],
 		'ppc':suma["PARTIDO POPULAR CRISTIANO"],'patria':suma["PERU PATRIA SEGURA"],'union':suma["UNION POR EL PERU"],
 		'vamos':suma["VAMOS AREQUIPA"],'peru':suma["VAMOS PERU"],'yanahuara':suma["YANAHUARA UN SENTIMIENTO Y TRABAJO"],
-		'blanco':suma["BLANCO"],'nulo':suma["NULO"]})
+		'blanco':suma["BLANCO"],'nulo':suma["NULO"],'total':total_votos,'mesas_compu':mesas_compu,'porcentaje_total':porcentaje_total})
 
 	
 from bottle import static_file
